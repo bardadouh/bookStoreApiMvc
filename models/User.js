@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
+const joiPasswordComplexity = require("joi-password-complexity");
+
+
 
 // User Schema
 const UserSchema = new mongoose.Schema(
@@ -58,31 +61,39 @@ const User = mongoose.model("User", UserSchema);
 // Validate Registration User
 function validateRegistrationUser(user) {
     const schema = Joi.object({
-        name: Joi.string().min(5).max(50).required(),
-        email: Joi.string().min(5).max(100).required().email(),
-        password: Joi.string().min(8).required().trim(),
-        username: Joi.string().min(3).max(20).required().trim(),
-        });
+      name: Joi.string().min(5).max(50).required(),
+      email: Joi.string().min(5).max(100).required().email(),
+      password: joiPasswordComplexity().required(),
+      username: Joi.string().min(3).max(20).required().trim(),
+    });
     return schema.validate(user);
 }
 // Validate Login User
 
 function validateLoginUser(user) {
     const schema = Joi.object({
-        email: Joi.string().min(5).max(100).required().email(),
-        password: Joi.string().min(8).required().trim(),
+      email: Joi.string().min(5).max(100).required().email(),
+      password: joiPasswordComplexity().required(),
     });
     return schema.validate(user);
 }
 
+// Validate Change Password User
+
+function validateChangePasswordUser(user) {
+  const schema = Joi.object({
+    password: joiPasswordComplexity().required(),
+  });
+  return schema.validate(user);
+}
 // Validate Update User
 
 function validateUpdateUser(user) {
     const schema = Joi.object({
-        name: Joi.string().min(5).max(50),
-        email: Joi.string().min(5).max(100).email(),
-        password: Joi.string().min(8).trim(),
-        username: Joi.string().min(3).max(20).trim(),
+      name: Joi.string().min(5).max(50),
+      email: Joi.string().min(5).max(100).email(),
+      password: joiPasswordComplexity(),
+      username: Joi.string().min(3).max(20).trim(),
     });
     return schema.validate(user);
 }
@@ -92,4 +103,5 @@ module.exports = {
     validateRegistrationUser,
     validateLoginUser,
     validateUpdateUser,
-}
+    validateChangePasswordUser,
+ };
